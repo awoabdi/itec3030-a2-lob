@@ -155,48 +155,39 @@ public class StockExchange {
 	     * 
 	     * @param path the path to the accounts list file
 	     */
-		public void readAccountsListFromFile(String path) {
-		    try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-	            String line;
-	            boolean isFirstLine = true; // Skip header
+	void readAccountsListFromFile(String filename) {
+    try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+        String line;
+        while ((line = br.readLine()) != null) {
+            String[] parts = line.split(",");
+            String type = parts[0].trim();       // "Retail" or "Institutional"
+            String strategy = parts[1].trim();   // "Aggressive" or "Conservative"
+            String ticker = parts[2].trim();     
 
-	            while ((line = br.readLine()) != null) {
-	                if (isFirstLine) {
-	                    isFirstLine = false;
-	                    continue;
-	                }
-	                String[] parts = line.split(",", -1); // Split by comma
-	                if (parts.length >= 5) {
-	                    String traderTitle = parts[0].trim();
-	                    String traderType = parts[1].trim();
-	                    String accType = parts[2].trim();
-	                    long initBalance = Long.parseLong(parts[3].trim());
-	                    String tradingStyle = parts[4].trim();
-	                	Trader t;
-	                    if (traderType.equals("Retail")) {
-	                    	t = new TraderRetail(traderTitle);
-	                    } else {
-	                    	t = new TraderInstitutional(traderTitle);
-	                    }
-	                    if (accType.equals("Basic")) {
-	                    	accounts.addAccount(new AccountBasic(t,initBalance));
-	                    } else {
-	                    	accounts.addAccount(new AccountPro(t,initBalance));
-	                    }
-	                    if (tradingStyle.equals("Conservative")) {
-	                    	traders.add(new TradingAgentConservative(t,this,newsDesk));
-	                    } else {
-	                    	traders.add(new TradingAgentAggressive(t,this,newsDesk));
-	                    }
-	                    
-	                } else {
-	                    System.err.println("Skipping malformed line (two few attributes): " + line);
-	                }
-	            }
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
-		}
+            AbstractTradingAgentFactory factory;
+
+            if ("Retail".equalsIgnoreCase(type)) {
+                factory = new RetailTradingAgentFactory();
+            } else if ("Institutional".equalsIgnoreCase(type)) {
+                factory = new InstitutionalTradingAgentFactory();
+            } else {
+                System.out.println("Unknown agent type: " + type);
+                continue;
+            }
+
+            INewsObserver agent = factory.create(strategy);
+
+            if (agent instanceof TradingAgent) {
+                TradingAgent tradingAgent = (TradingAgent) agent;
+                tradingAgent.setTicker(ticker); 
+                tradingAgents.add(tradingAgent);
+            }
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+
 		
 	    /**
 	     * Reads initial positions from a file and updates account holdings.
