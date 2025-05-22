@@ -160,6 +160,11 @@ public class StockExchange {
         String line;
         while ((line = br.readLine()) != null) {
             String[] parts = line.split(",");
+            if (parts.length < 3) {
+                System.out.println("Skipping malformed line: " + line);
+                continue;
+            }
+
             String type = parts[0].trim();       // "Retail" or "Institutional"
             String strategy = parts[1].trim();   // "Aggressive" or "Conservative"
             String ticker = parts[2].trim();     
@@ -180,9 +185,7 @@ public class StockExchange {
             if (agent instanceof TradingAgent) {
                 TradingAgent tradingAgent = (TradingAgent) agent;
                 tradingAgent.setTicker(ticker); 
-             traders.add(tradingAgent);
-
-
+                traders.add(tradingAgent); // ✅ Fixed here
             }
         }
     } catch (IOException e) {
@@ -190,6 +193,7 @@ public class StockExchange {
     }
 }
 
+  
 		
 	    /**
 	     * Reads initial positions from a file and updates account holdings.
