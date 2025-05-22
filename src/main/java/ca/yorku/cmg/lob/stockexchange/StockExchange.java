@@ -180,7 +180,9 @@ public class StockExchange {
             if (agent instanceof TradingAgent) {
                 TradingAgent tradingAgent = (TradingAgent) agent;
                 tradingAgent.setTicker(ticker); 
-                tradingAgents.add(tradingAgent);
+             traders.add(tradingAgent);
+
+
             }
         }
     } catch (IOException e) {
