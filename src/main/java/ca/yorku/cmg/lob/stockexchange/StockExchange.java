@@ -181,7 +181,7 @@ public class StockExchange {
             }
 
             INewsObserver agent = factory.create(strategy);
-
+        getNewsBoard().registerObserver(agent);
             if (agent instanceof TradingAgent) {
                 TradingAgent tradingAgent = (TradingAgent) agent;
                 tradingAgent.setTicker(ticker); 
