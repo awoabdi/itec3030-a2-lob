@@ -1,5 +1,8 @@
 package ca.yorku.cmg.lob.stockexchange.events;
-
+import java.util.ArrayList;
+import java.util.List;
+import ca.yorku.cmg.lob.stockexchange.events.Event;
+import ca.yorku.cmg.lob.stockexchange.events.Observer;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -24,7 +27,18 @@ public class NewsBoard {
 	public NewsBoard(SecurityList x) {
 		this.securities = x;
 	}
-	
+	private List<Observer> observers = new ArrayList<>();
+
+public void registerObserver(Observer o) {
+    observers.add(o);
+}
+
+private void notifyObservers(Event e) {
+    for (Observer o : observers) {
+        o.update(e);
+    }
+}
+
     // Allowed event values
     private static final Set<String> VALID_EVENTS = new HashSet<>(
 	        Arrays.asList("Good", "Bad")
@@ -116,8 +130,12 @@ public class NewsBoard {
 	 * Stub for the observer part. Runs the entire queue of events and sends notifications to registered trading agents.   
 	 */
 	public void runEventsList() {
+    for (Event e : this.eventsList) {
+        notifyObservers(e);
+    }
+}
 
-	}
+	
 	
 	
 	
