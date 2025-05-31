@@ -8,7 +8,7 @@ import ca.yorku.cmg.lob.trader.Trader;
 /**
  * An trading agent that receives news and reacts by submitting ask or bid orders.
  */
-public abstract class TradingAgent {
+public abstract class TradingAgent implements Observer {
 	protected Trader t;
 	protected StockExchange exc;
 	protected NewsBoard news;
@@ -27,6 +27,10 @@ public abstract class TradingAgent {
 	public void setTicker(String ticker) {
 	this.ticker = ticker;
 }
+@Override
+public void update(Event e) {
+    examineEvent(e);
+}
 
 	/**
 	 * Method to be called as time advances to {@code time}. In response the TradingAgent will poll the NewsBoard for events.
@@ -40,12 +44,12 @@ public abstract class TradingAgent {
 	 * Examine if an event is relevant for the Agent, i.e., if the Agent has a position on it.
 	 * @param e The {@linkplain Event} object in question
 	 */
-	private void examineEvent(Event e) {
-		int positionInSecurity = exc.getAccounts().getTraderAccount(t).getPosition(e.getSecrity().getTicker());
-		if (positionInSecurity > 0) {
-			actOnEvent(e,positionInSecurity,exc.getPrice(e.getSecrity().getTicker()));
-		}
-	}
+	protected void examineEvent(Event e) {
+    int positionInSecurity = exc.getAccounts().getTraderAccount(t).getPosition(e.getSecrity().getTicker());
+    if (positionInSecurity > 0) {
+        actOnEvent(e, positionInSecurity, exc.getPrice(e.getSecrity().getTicker()));
+    }
+}
 
 	
 	/**
