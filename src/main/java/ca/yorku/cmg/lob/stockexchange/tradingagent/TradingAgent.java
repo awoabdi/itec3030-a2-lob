@@ -12,7 +12,7 @@ public abstract class TradingAgent {
 	protected Trader t;
 	protected StockExchange exc;
 	protected NewsBoard news;
-	
+	protected String ticker;
 	/**
 	 * Constructor
 	 * @param t The {@linkplain Trader} object associated with the agent.
@@ -24,7 +24,10 @@ public abstract class TradingAgent {
 		this.exc = e;
 		this.news = n;
 	}
-	
+	public void setTicker(String ticker) {
+	this.ticker = ticker;
+}
+
 	/**
 	 * Method to be called as time advances to {@code time}. In response the TradingAgent will poll the NewsBoard for events.
 	 * @param time The time to advance to.
